@@ -5,9 +5,13 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.ensemble import RandomForestRegressor
 
 # Load the saved models
-model_point = joblib.load('\models\model_1.pkl')
-knn = joblib.load('models\model_2.pkl')
-le_user = joblib.load('models\model_3.pkl')
+model_point = joblib.load(r'models/model_1.pkl')
+knn = joblib.load(r'models/model_2.pkl')
+le_user = joblib.load(r'models/model_3.pkl')
+
+# model_point = joblib.load('\models\model_1.pkl')
+# knn = joblib.load('models\model_2.pkl')
+# le_user = joblib.load('models\model_3.pkl')
 
 # Function to predict location based on future timestamp for all users
 def predict_location_for_all_users(future_timestamp):
