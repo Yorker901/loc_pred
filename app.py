@@ -109,7 +109,6 @@ if st.button('Predict'):
     future_timestamp = pd.to_datetime(f'{future_date} {future_time}')
     prediction = predict_location_for_user(future_timestamp, user_id)
     
-    st.write('Prediction for the selected user:')
     st.write(f'Predicted location_name: {prediction["location_name"]}')
     st.write(f'Predicted location_point: {prediction["location_point"]}')
 
