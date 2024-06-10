@@ -1,13 +1,10 @@
 import streamlit as st
 import pandas as pd
 
-st.title('Basic Map of India')
+st.title('File Upload Example')
 
-# Single point to center the map on India
-df = pd.DataFrame({
-    'lat': [20.5937],
-    'lon': [78.9629]
-})
-
-# Display a basic map with Streamlit's built-in map function
-st.map(df)
+uploaded_file = st.file_uploader('Choose a file')
+if uploaded_file is not None:
+    df = pd.read_csv(uploaded_file)
+    st.write('File Contents:')
+    st.write(df)
