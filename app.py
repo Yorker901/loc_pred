@@ -52,10 +52,5 @@ if st.button('Predict'):
         st.write(f'User: {prediction["user_id"]} - Predicted location_name: {prediction["location_name"]} - Predicted location_point: {prediction["location_point"]}')
 
 
-the code is running fine now i want to some changes like 
 # Input for future timestamp
 future_timestamp = st.text_input('Enter future timestamp (YYYY-MM-DDTHH:MM:SS)', '2024-06-01T13:00:00')
-
-input for future timestamp i want to pass separately like date and time
-
-and also want to add input for user
