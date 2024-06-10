@@ -98,10 +98,10 @@ def predict_location_for_user(future_timestamp, user_id):
 st.title('Location Prediction Application')
 
 # Input for future date and time
-future_date = st.date_input('Enter future date', pd.to_datetime('2024-06-01'))
-# future_time = st.time_input('Enter future time', pd.to_datetime('13:00:00').time())
+future_date = st.date_input('Enter date', pd.to_datetime('2024-06-01'))
+# future_time = st.time_input('Enter time', pd.to_datetime('13:00:00').time())
 # Input for future time
-future_time = st.text_input('Enter future time (HH:MM:SS)', '00:00:00')
+future_time = st.text_input('Enter time (HH:MM:SS)', '00:00:00')
 
 # Input for user
 user_id = st.selectbox('Select User', le_user.classes_)
@@ -111,6 +111,6 @@ if st.button('Predict'):
     future_timestamp = pd.to_datetime(f'{future_date} {future_time}')
     prediction = predict_location_for_user(future_timestamp, user_id)
     
-    st.markdown(f'**Predicted location name:** {prediction["location_name"]}')
-    st.markdown(f'**Predicted location point:** {prediction["location_point"]}')
+    st.markdown(f'**Predicted location name: ** {prediction["location_name"]}')
+    st.markdown(f'**Predicted location point: ** {prediction["location_point"]}')
 
