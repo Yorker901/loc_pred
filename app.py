@@ -101,7 +101,7 @@ st.title('Location Prediction Application')
 future_date = st.date_input('Enter date', pd.to_datetime('2024-06-01'))
 # future_time = st.time_input('Enter time', pd.to_datetime('00:00:00').time())
 # Input for future time
-future_time = st.text_input('Enter time (HH:MM:SS)', '00:00:00')
+future_time = st.text_input('Enter time', '00:00:00')
 
 # Input for user
 user_id = st.selectbox('Select User', le_user.classes_)
