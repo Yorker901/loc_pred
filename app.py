@@ -40,12 +40,12 @@ def predict_location_for_user(future_timestamp, user_id):
 # Streamlit app
 st.title('Location Prediction Application')
 
+# Input for user
+user_id = st.selectbox('Select User', le_user.classes_)
+
 # Input for future date and time
 future_date = st.date_input('Enter future date', pd.to_datetime('2024-06-01'))
 future_time = st.time_input('Enter future time', pd.to_datetime('13:00:00').time())
-
-# Input for user
-user_id = st.selectbox('Select User', le_user.classes_)
 
 if st.button('Predict'):
     # Combine future date and time
@@ -53,4 +53,4 @@ if st.button('Predict'):
     prediction = predict_location_for_user(future_timestamp, user_id)
     
     st.write('Prediction for the selected user:')
-    st.write(f'User: {prediction["user_id"]} - Predicted location_name: {prediction["location_name"]} - Predicted location_point: {prediction["location_point"]}')
+    st.write(f'User: {Predicted location_name: {prediction["location_name"]} Predicted location_point: {prediction["location_point"]}')
