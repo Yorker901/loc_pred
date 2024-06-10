@@ -53,4 +53,4 @@ if st.button('Predict'):
     prediction = predict_location_for_user(future_timestamp, user_id)
     
     st.write('Prediction for the selected user:')
-    st.write(f'User: {Predicted location_name: {prediction["location_name"]} Predicted location_point: {prediction["location_point"]}')
+    st.write(f'User: {Predicted location_name: {prediction["location_name"]}-Predicted location_point: {prediction["location_point"]}')
