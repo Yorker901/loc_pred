@@ -71,7 +71,7 @@ st.sidebar.title('Input Parameters')
 
 # Input for future date and time
 future_date = st.sidebar.date_input('Enter date', pd.to_datetime('2024-06-01'))
-future_time = st.sidebar.text_input('Enter time', '00:00:00')
+future_time = st.sidebar.time_input('Enter time', pd.to_datetime('00:00:00').time())
 
 # Input for multiple users
 user_ids = st.sidebar.multiselect('Select Users', le_user.classes_)
