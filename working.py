@@ -126,6 +126,8 @@
 # else:
 #     st.markdown("<div class='footer'>Location Prediction Application © 2024</div>", unsafe_allow_html=True)
 
+
+
 import streamlit as st
 import pandas as pd
 import joblib
@@ -233,7 +235,7 @@ if st.sidebar.button('Predict'):
     # Convert location data to DataFrame
     location_df = pd.DataFrame(location_data)
     
-    # Create a Pydeck map with custom Mapbox satellite tiles
+    # Create a Pydeck map with hybrid map style
     view_state = pdk.ViewState(
         latitude=location_df['latitude'].mean(),
         longitude=location_df['longitude'].mean(),
@@ -263,7 +265,7 @@ if st.sidebar.button('Predict'):
 
     # Render the map in Streamlit
     r = pdk.Deck(
-        map_style='mapbox://styles/mapbox/satellite-v9',
+        map_style='mapbox://styles/mapbox/satellite-hybrid-v9',
         initial_view_state=view_state,
         layers=[layer],
         tooltip=True
@@ -276,3 +278,4 @@ if st.sidebar.button('Predict'):
     st.markdown("<div class='footer'>Location Prediction Application © 2024</div>", unsafe_allow_html=True)
 else:
     st.markdown("<div class='footer'>Location Prediction Application © 2024</div>", unsafe_allow_html=True)
+
