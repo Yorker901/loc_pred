@@ -4,8 +4,6 @@ import joblib
 import os
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.ensemble import RandomForestRegressor
-import folium
-from streamlit_folium import st_folium
 
 # Check if models exist and load them
 model_files = {
@@ -121,20 +119,13 @@ if st.sidebar.button('Predict'):
     # Convert location data to DataFrame
     location_df = pd.DataFrame(location_data)
     
-    # Create a Folium map
-    m = folium.Map(location=[location_df['latitude'].mean(), location_df['longitude'].mean()], zoom_start=12)
-    
-    # Add markers with tooltips
-    for idx, row in location_df.iterrows():
-        tooltip = (f"User ID: {row['user_id']}<br>"
-                   f"Location Name: {row['location_name']}<br>"
-                   f"Location Point: ({row['longitude']}, {row['latitude']})<br>"
-                   f"Timestamp: {row['timestamp']}")
-        folium.Marker([row['latitude'], row['longitude']], tooltip=tooltip).add_to(m)
-    
     # Display the map in Streamlit
-    st_folium(m, width=700, height=500)
+    st.map(location_df[['latitude', 'longitude']])
 
+    # Display tooltip information
+    for idx, row in location_df.iterrows():
+        st.write(f"User ID: {row['user_id']}, Location Name: {row['location_name']}, Location Point: ({row['longitude']}, {row['latitude']}), Timestamp: {row['timestamp']}")
+    
     st.write("### Explore the map and interact with other features.")
     
     st.markdown("<div class='footer'>Location Prediction Application © 2024</div>", unsafe_allow_html=True)
