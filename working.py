@@ -125,5 +125,3 @@ if st.sidebar.button('Predict'):
     st.markdown("<div class='footer'>Location Prediction Application © 2024</div>", unsafe_allow_html=True)
 else:
     st.markdown("<div class='footer'>Location Prediction Application © 2024</div>", unsafe_allow_html=True)
-
-
