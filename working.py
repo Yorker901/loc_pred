@@ -126,14 +126,12 @@
 # else:
 #     st.markdown("<div class='footer'>Location Prediction Application © 2024</div>", unsafe_allow_html=True)
 
-
 import streamlit as st
 import pandas as pd
 import joblib
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.ensemble import RandomForestRegressor
-import folium
-from streamlit_folium import st_folium
+import pydeck as pdk
 
 # Load the saved models
 model_point = joblib.load(r'models/model_1.pkl')
@@ -235,19 +233,43 @@ if st.sidebar.button('Predict'):
     # Convert location data to DataFrame
     location_df = pd.DataFrame(location_data)
     
-    # Create a Folium map
-    m = folium.Map(location=[location_df['latitude'].mean(), location_df['longitude'].mean()], zoom_start=12)
+    # Create a Pydeck map with custom Mapbox satellite tiles
+    view_state = pdk.ViewState(
+        latitude=location_df['latitude'].mean(),
+        longitude=location_df['longitude'].mean(),
+        zoom=10,
+        bearing=0,
+        pitch=45
+    )
     
-    # Add markers with tooltips
-    for idx, row in location_df.iterrows():
-        tooltip = (f"User ID: {row['user_id']}<br>"
-                   f"Location Name: {row['location_name']}<br>"
-                   f"Location Point: ({row['longitude']}, {row['latitude']})<br>"
-                   f"Timestamp: {row['timestamp']}")
-        folium.Marker([row['latitude'], row['longitude']], tooltip=tooltip).add_to(m)
-    
-    # Display the map in Streamlit
-    st_data = st_folium(m, width=700, height=500)
+    # Define the layer for user predictions
+    layer = pdk.Layer(
+        'ScatterplotLayer',
+        data=location_df,
+        get_position='[longitude, latitude]',
+        get_radius=200,
+        get_fill_color='[255, 0, 0, 140]',
+        pickable=True,
+        auto_highlight=True,
+        tooltip={
+            'html': '<b>User ID:</b> {user_id}<br><b>Location Name:</b> {location_name}<br><b>Location Point:</b> ({longitude}, {latitude})<br><b>Timestamp:</b> {timestamp}',
+            'style': {
+                'color': 'white',
+                'background-color': 'black',
+                'font-size': '12px'
+            }
+        }
+    )
+
+    # Render the map in Streamlit
+    r = pdk.Deck(
+        map_style='mapbox://styles/mapbox/satellite-v9',
+        initial_view_state=view_state,
+        layers=[layer],
+        tooltip=True
+    )
+
+    st.pydeck_chart(r)
 
     st.write("### Explore the map and interact with other features.")
     
