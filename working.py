@@ -147,6 +147,7 @@
 # else:
 #     st.markdown("<div class='footer'>Location Prediction Application © 2024</div>", unsafe_allow_html=True)
 
+
 import streamlit as st
 import pandas as pd
 import joblib
@@ -245,13 +246,18 @@ st.sidebar.title('Input Parameters')
 
 # Input for future date and time
 future_date = st.sidebar.date_input('Enter date', pd.to_datetime('2024-06-01'))
-future_time = st.sidebar.time_input('Enter time', pd.to_datetime('00:00:00').time())
+future_time = st.sidebar.text_input('Enter time', '00:00:00')
 
 # Input for multiple users
 user_ids = st.sidebar.multiselect('Select Users', le_user.classes_)
 
 if st.sidebar.button('Predict'):
-    future_timestamp = pd.to_datetime(f'{future_date} {future_time}')
+    # Parse the future time input
+    try:
+        future_timestamp = pd.to_datetime(f'{future_date} {future_time}')
+    except ValueError:
+        st.error("Invalid time format. Please enter time in HH:MM:SS format.")
+        st.stop()
 
     predictions = []
     for user_id in user_ids:
@@ -295,4 +301,3 @@ if st.sidebar.button('Predict'):
     st.markdown("<div class='footer'>Location Prediction Application © 2024</div>", unsafe_allow_html=True)
 else:
     st.markdown("<div class='footer'>Location Prediction Application © 2024</div>", unsafe_allow_html=True)
-
