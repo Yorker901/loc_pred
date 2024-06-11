@@ -3,7 +3,7 @@ import pandas as pd
 import joblib
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.ensemble import RandomForestRegressor
-from geopy.point import Point
+import pydeck as pdk
 
 # Load the saved models
 model_point = joblib.load(r'models/model_1.pkl')
@@ -33,7 +33,8 @@ def predict_location_for_user(future_timestamp, user_id):
     prediction = {
         'user_id': user_id,
         'location_name': location_name,
-        'location_point': location_point.tolist()
+        'location_point': location_point.tolist(),
+        'timestamp': future_timestamp.strftime('%Y-%m-%d %H:%M:%S')
     }
 
     return prediction
@@ -95,6 +96,8 @@ if st.sidebar.button('Predict'):
         
         location_data.append({
             'user_id': prediction['user_id'],
+            'location_name': prediction['location_name'],
+            'timestamp': prediction['timestamp'],
             'latitude': prediction['location_point'][1],
             'longitude': prediction['location_point'][0]
         })
@@ -102,8 +105,42 @@ if st.sidebar.button('Predict'):
     # Convert location data to DataFrame
     location_df = pd.DataFrame(location_data)
     
-    # Plot all locations on a single map
-    st.map(location_df)
+    # Define the tooltip for each point
+    tooltip = {
+        "html": "<b>User ID:</b> {user_id}<br/><b>Location Name:</b> {location_name}<br/><b>Location Point:</b> [{longitude}, {latitude}]<br/><b>Timestamp:</b> {timestamp}",
+        "style": {
+            "backgroundColor": "steelblue",
+            "color": "white"
+        }
+    }
+
+    # Define the Pydeck layer
+    layer = pdk.Layer(
+        "ScatterplotLayer",
+        data=location_df,
+        get_position="[longitude, latitude]",
+        get_radius=100,
+        get_color=[255, 0, 0],
+        pickable=True
+    )
+
+    # Define the Pydeck view
+    view_state = pdk.ViewState(
+        latitude=location_df["latitude"].mean(),
+        longitude=location_df["longitude"].mean(),
+        zoom=10,
+        pitch=50
+    )
+
+    # Create the Pydeck deck
+    r = pdk.Deck(
+        layers=[layer],
+        initial_view_state=view_state,
+        tooltip=tooltip
+    )
+
+    # Render the map
+    st.pydeck_chart(r)
 
     st.write("### Explore the map and interact with other features.")
     
