@@ -85,17 +85,25 @@ if st.sidebar.button('Predict'):
         predictions.append(prediction)
     
     st.write('## Predictions for the selected users:')
+    
+    # Aggregate all locations into a single DataFrame for plotting
+    location_data = []
     for prediction in predictions:
         st.markdown(f'### **User ID:** {prediction["user_id"]}')
         st.markdown(f'**Predicted location name:** {prediction["location_name"]}')
         st.markdown(f'**Predicted location point:** {prediction["location_point"]}')
         
-        # Plotting the predicted location on a map
-        location_df = pd.DataFrame([{
+        location_data.append({
+            'user_id': prediction['user_id'],
             'latitude': prediction['location_point'][1],
             'longitude': prediction['location_point'][0]
-        }])
-        st.map(location_df)
+        })
+    
+    # Convert location data to DataFrame
+    location_df = pd.DataFrame(location_data)
+    
+    # Plot all locations on a single map
+    st.map(location_df)
 
     st.write("### Explore the map and interact with other features.")
     
