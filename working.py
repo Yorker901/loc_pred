@@ -3,7 +3,8 @@ import pandas as pd
 import joblib
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.ensemble import RandomForestRegressor
-import pydeck as pdk
+import folium
+from streamlit_folium import st_folium
 
 # Load the saved models
 model_point = joblib.load(r'models/model_1.pkl')
@@ -105,42 +106,21 @@ if st.sidebar.button('Predict'):
     # Convert location data to DataFrame
     location_df = pd.DataFrame(location_data)
     
-    # Define the tooltip for each point
-    tooltip = {
-        "html": "<b>User ID:</b> {user_id}<br/><b>Location Name:</b> {location_name}<br/><b>Location Point:</b> [{longitude}, {latitude}]<br/><b>Timestamp:</b> {timestamp}",
-        "style": {
-            "backgroundColor": "steelblue",
-            "color": "white"
-        }
-    }
-
-    # Define the Pydeck layer
-    layer = pdk.Layer(
-        "ScatterplotLayer",
-        data=location_df,
-        get_position="[longitude, latitude]",
-        get_radius=100,
-        get_color=[255, 0, 0],
-        pickable=True
-    )
-
-    # Define the Pydeck view
-    view_state = pdk.ViewState(
-        latitude=location_df["latitude"].mean(),
-        longitude=location_df["longitude"].mean(),
-        zoom=10,
-        pitch=50
-    )
-
-    # Create the Pydeck deck
-    r = pdk.Deck(
-        layers=[layer],
-        initial_view_state=view_state,
-        tooltip=tooltip
-    )
-
-    # Render the map
-    st.pydeck_chart(r)
+    # Create a folium map
+    map_center = [location_df['latitude'].mean(), location_df['longitude'].mean()]
+    folium_map = folium.Map(location=map_center, zoom_start=10)
+    
+    # Add markers to the map
+    for _, row in location_df.iterrows():
+        tooltip = f"User ID: {row['user_id']}<br>Location Name: {row['location_name']}<br>Location Point: [{row['longitude']}, {row['latitude']}]<br>Timestamp: {row['timestamp']}"
+        folium.Marker(
+            location=[row['latitude'], row['longitude']],
+            tooltip=tooltip,
+            icon=folium.Icon(color='blue', icon='info-sign')
+        ).add_to(folium_map)
+    
+    # Display the map in Streamlit
+    st_folium(folium_map, width=700, height=500)
 
     st.write("### Explore the map and interact with other features.")
     
