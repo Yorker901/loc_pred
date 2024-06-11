@@ -247,7 +247,7 @@ if st.sidebar.button('Predict'):
         folium.Marker([row['latitude'], row['longitude']], tooltip=tooltip).add_to(m)
     
     # Display the map in Streamlit
-    st_folium(m, width=700, height=500)
+    st_data = st_folium(m, width=700, height=500)
 
     st.write("### Explore the map and interact with other features.")
     
