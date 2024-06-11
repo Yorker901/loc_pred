@@ -1,15 +1,30 @@
 import streamlit as st
 import pandas as pd
 import joblib
+import os
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.ensemble import RandomForestRegressor
 import folium
 from streamlit_folium import st_folium
 
-# Load the saved models
-model_point = joblib.load(r'models/model_1.pkl')
-knn = joblib.load(r'models/model_2.pkl')
-le_user = joblib.load(r'models/model_3.pkl')
+# Check if models exist and load them
+model_files = {
+    'model_point': r'models/model_1.pkl',
+    'knn': r'models/model_2.pkl',
+    'le_user': r'models/model_3.pkl'
+}
+
+models = {}
+for model_name, model_path in model_files.items():
+    if os.path.exists(model_path):
+        models[model_name] = joblib.load(model_path)
+    else:
+        st.error(f"Model file {model_path} not found. Please ensure the model files are correctly placed.")
+        st.stop()
+
+model_point = models['model_point']
+knn = models['knn']
+le_user = models['le_user']
 
 # Function to predict location based on future timestamp for a user
 def predict_location_for_user(future_timestamp, user_id):
