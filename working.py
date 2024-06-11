@@ -221,6 +221,14 @@ if st.sidebar.button('Predict'):
     
     st.write('## Predictions for the selected users:')
     
+    # Display predictions above the map
+    for prediction in predictions:
+        st.markdown(f'**User ID:** {prediction["user_id"]}')
+        st.markdown(f'**Predicted location name:** {prediction["location_name"]}')
+        st.markdown(f'**Predicted location point:** {prediction["location_point"]}')
+        st.markdown(f'**Timestamp:** {prediction["timestamp"]}')
+        st.write("---")
+    
     # Create a Folium map
     m = folium.Map(location=[28.7041, 77.1025], zoom_start=10)
 
@@ -236,6 +244,11 @@ if st.sidebar.button('Predict'):
     folium_static(m)
 
     st.write("### Explore the map and interact with other features.")
+    
+    st.markdown("<div class='footer'>Location Prediction Application © 2024</div>", unsafe_allow_html=True)
+else:
+    st.markdown("<div class='footer'>Location Prediction Application © 2024</div>", unsafe_allow_html=True)
+
     
     st.markdown("<div class='footer'>Location Prediction Application © 2024</div>", unsafe_allow_html=True)
 else:
