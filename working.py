@@ -71,28 +71,32 @@ st.sidebar.title('Input Parameters')
 
 # Input for future date and time
 future_date = st.sidebar.date_input('Enter date', pd.to_datetime('2024-06-01'))
-future_time = st.sidebar.time_input('Enter time', pd.to_datetime('00:00:00').time())
+future_time = st.sidebar.text_input('Enter time', '00:00:00')
 
-# Input for user
-user_id = st.sidebar.selectbox('Select User', le_user.classes_)
+# Input for multiple users
+user_ids = st.sidebar.multiselect('Select Users', le_user.classes_)
 
 if st.sidebar.button('Predict'):
-    # Combine future date and time
     future_timestamp = pd.to_datetime(f'{future_date} {future_time}')
-    prediction = predict_location_for_user(future_timestamp, user_id)
     
-    st.write('## Prediction for the selected user:')
-    st.markdown(f'### **Predicted location name:** {prediction["location_name"]}')
-    st.markdown(f'### **Predicted location point:** {prediction["location_point"]}')
+    predictions = []
+    for user_id in user_ids:
+        prediction = predict_location_for_user(future_timestamp, user_id)
+        predictions.append(prediction)
     
-    # Plotting the predicted location on a map
-    location_df = pd.DataFrame([{
-        'latitude': prediction['location_point'][1],
-        'longitude': prediction['location_point'][0]
-    }])
-    st.map(location_df)
+    st.write('## Predictions for the selected users:')
+    for prediction in predictions:
+        st.markdown(f'### **User ID:** {prediction["user_id"]}')
+        st.markdown(f'**Predicted location name:** {prediction["location_name"]}')
+        st.markdown(f'**Predicted location point:** {prediction["location_point"]}')
+        
+        # Plotting the predicted location on a map
+        location_df = pd.DataFrame([{
+            'latitude': prediction['location_point'][1],
+            'longitude': prediction['location_point'][0]
+        }])
+        st.map(location_df)
 
-    # Add more interactive elements as needed
     st.write("### Explore the map and interact with other features.")
     
     st.markdown("<div class='footer'>Location Prediction Application © 2024</div>", unsafe_allow_html=True)
