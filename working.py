@@ -3,8 +3,6 @@ import pandas as pd
 import joblib
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.ensemble import RandomForestRegressor
-import folium
-from streamlit_folium import st_folium
 
 # Load the saved models
 model_point = joblib.load(r'models/model_1.pkl')
@@ -106,21 +104,8 @@ if st.sidebar.button('Predict'):
     # Convert location data to DataFrame
     location_df = pd.DataFrame(location_data)
     
-    # Create a folium map
-    map_center = [location_df['latitude'].mean(), location_df['longitude'].mean()]
-    folium_map = folium.Map(location=map_center, zoom_start=10)
-    
-    # Add markers to the map
-    for _, row in location_df.iterrows():
-        tooltip = f"User ID: {row['user_id']}<br>Location Name: {row['location_name']}<br>Location Point: [{row['longitude']}, {row['latitude']}]<br>Timestamp: {row['timestamp']}"
-        folium.Marker(
-            location=[row['latitude'], row['longitude']],
-            tooltip=tooltip,
-            icon=folium.Icon(color='blue', icon='info-sign')
-        ).add_to(folium_map)
-    
-    # Display the map in Streamlit
-    st_folium(folium_map, width=700, height=500)
+    # Display the map in Streamlit using st.map
+    st.map(location_df)
 
     st.write("### Explore the map and interact with other features.")
     
