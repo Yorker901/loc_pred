@@ -105,7 +105,7 @@ if st.sidebar.button('Predict'):
     location_df = pd.DataFrame(location_data)
     
     # Display the map in Streamlit using st.map
-    st.map(location_df)
+    st.map(location_df[['latitude', 'longitude']])
 
     st.write("### Explore the map and interact with other features.")
     
