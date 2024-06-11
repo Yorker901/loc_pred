@@ -4,3 +4,4 @@ streamlit
 matplotlib
 geopy
 folium
+streamlit_folium 
