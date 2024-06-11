@@ -3,3 +3,4 @@ scikit-learn==1.2.2
 streamlit
 matplotlib
 geopy
+folium
