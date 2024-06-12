@@ -218,21 +218,21 @@ st.set_page_config(page_title='Location Prediction', page_icon=':world_map:', la
 st.markdown("""
     <style>
     .sidebar .sidebar-content {
-        background-color: #f0f2f6;
+        background-color: var(--secondary-background-color);
     }
     .main {
-        background-color: #ffffff;
+        background-color: var(--background-color);
         padding: 2rem;
         border-radius: 10px;
         box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     }
     .title {
         text-align: center;
-        color: #4CAF50;
+        color: var(--primary-color);
     }
     .footer {
         text-align: center;
-        color: #777;
+        color: var(--text-color);
         font-size: 12px;
         margin-top: 50px;
     }
