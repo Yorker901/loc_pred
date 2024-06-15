@@ -260,6 +260,9 @@ st.markdown("""
         font-size: 12px;
         margin-top: 50px;
     }
+    .map-container {
+        height: 600px;
+    }
     </style>
     """, unsafe_allow_html=True)
 
@@ -323,6 +326,22 @@ def render_home():
                 st.write("No predictions available.")
 
             st.markdown("<div class='footer'>Location Prediction Application © 2024</div>", unsafe_allow_html=True)
+
+            # Example data analysis section
+            st.header("Data Analysis Insights")
+            st.subheader("User Activity Trends")
+            st.write("Placeholder for data analysis insights and visualizations.")
+
+            # Feedback section
+            st.header("Feedback and Suggestions")
+            feedback = st.text_area("Please provide your feedback on the prediction accuracy or any suggestions you have.")
+            if st.button('Submit Feedback'):
+                if feedback.strip():
+                    st.success("Thank you for your feedback!")
+                    # Handle feedback storage or processing here (e.g., save to a database)
+                else:
+                    st.warning("Please enter feedback before submitting.")
+
         else:
             st.markdown("<div class='footer'>Location Prediction Application © 2024</div>", unsafe_allow_html=True)
     else:
