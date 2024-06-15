@@ -68,21 +68,21 @@
 # st.markdown("""
 #     <style>
 #     .sidebar .sidebar-content {
-#         background-color: #f0f2f6;
+#         background-color: var(--secondary-background-color);
 #     }
 #     .main {
-#         background-color: #ffffff;
+#         background-color: var(--background-color);
 #         padding: 2rem;
 #         border-radius: 10px;
 #         box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 #     }
 #     .title {
 #         text-align: center;
-#         color: #4CAF50;
+#         color: var(--primary-color);
 #     }
 #     .footer {
 #         text-align: center;
-#         color: #777;
+#         color: var(--text-color);
 #         font-size: 12px;
 #         margin-top: 50px;
 #     }
@@ -96,13 +96,18 @@
 
 # # Input for future date and time
 # future_date = st.sidebar.date_input('Enter date', pd.to_datetime('2024-06-01'))
-# future_time = st.sidebar.time_input('Enter time', pd.to_datetime('00:00:00').time())
+# future_time = st.sidebar.text_input('Enter time', '00:00:00')
 
 # # Input for multiple users
 # user_ids = st.sidebar.multiselect('Select Users', le_user.classes_)
 
 # if st.sidebar.button('Predict'):
-#     future_timestamp = pd.to_datetime(f'{future_date} {future_time}')
+#     # Parse the future time input
+#     try:
+#         future_timestamp = pd.to_datetime(f'{future_date} {future_time}')
+#     except ValueError:
+#         st.error("Invalid time format. Please enter time in HH:MM:SS format.")
+#         st.stop()
 
 #     predictions = []
 #     for user_id in user_ids:
@@ -178,6 +183,25 @@ except Exception as e:
     st.error(f"Error loading models: {e}")
     st.stop()
 
+# Authentication logic
+def authenticate_user():
+    if 'authenticated' not in st.session_state:
+        st.session_state['authenticated'] = False
+    
+    if not st.session_state['authenticated']:
+        st.title("Login")
+        username = st.text_input('Username')
+        password = st.text_input('Password', type='password')
+        submit_button = st.button('Login')
+
+        if submit_button:
+            if username == "admin" and password == "password":
+                st.session_state['authenticated'] = True
+            else:
+                st.error("Invalid username or password")
+    
+    return st.session_state['authenticated']
+
 # Function to predict location based on future timestamp for a user
 def predict_location_for_user(future_timestamp, user_id):
     try:
@@ -239,65 +263,70 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-st.title('Location Prediction Application :world_map:')
+def render_home():
+    if authenticate_user():
+        st.title('Location Prediction Application :world_map:')
+        st.sidebar.title('Input Parameters')
 
-# Sidebar for inputs
-st.sidebar.title('Input Parameters')
+        # Input for future date and time
+        future_date = st.sidebar.date_input('Enter date', pd.to_datetime('2024-06-01'))
+        future_time = st.sidebar.text_input('Enter time', '00:00:00')
 
-# Input for future date and time
-future_date = st.sidebar.date_input('Enter date', pd.to_datetime('2024-06-01'))
-future_time = st.sidebar.text_input('Enter time', '00:00:00')
+        # Input for multiple users
+        user_ids = st.sidebar.multiselect('Select Users', le_user.classes_)
 
-# Input for multiple users
-user_ids = st.sidebar.multiselect('Select Users', le_user.classes_)
+        if st.sidebar.button('Predict'):
+            # Parse the future time input
+            try:
+                future_timestamp = pd.to_datetime(f'{future_date} {future_time}')
+            except ValueError:
+                st.error("Invalid time format. Please enter time in HH:MM:SS format.")
+                st.stop()
 
-if st.sidebar.button('Predict'):
-    # Parse the future time input
-    try:
-        future_timestamp = pd.to_datetime(f'{future_date} {future_time}')
-    except ValueError:
-        st.error("Invalid time format. Please enter time in HH:MM:SS format.")
-        st.stop()
+            predictions = []
+            for user_id in user_ids:
+                prediction = predict_location_for_user(future_timestamp, user_id)
+                if prediction:
+                    predictions.append(prediction)
 
-    predictions = []
-    for user_id in user_ids:
-        prediction = predict_location_for_user(future_timestamp, user_id)
-        if prediction:
-            predictions.append(prediction)
+            st.write('## Predictions for the selected users:')
 
-    st.write('## Predictions for the selected users:')
+            # Display predictions above the map
+            for prediction in predictions:
+                st.markdown(f'**User ID:** {prediction["user_id"]}')
+                st.markdown(f'**Predicted location name:** {prediction["location_name"]}')
+                st.markdown(f'**Predicted location point:** {prediction["location_point"]}')
+                st.write("---")
 
-    # Display predictions above the map
-    for prediction in predictions:
-        st.markdown(f'**User ID:** {prediction["user_id"]}')
-        st.markdown(f'**Predicted location name:** {prediction["location_name"]}')
-        st.markdown(f'**Predicted location point:** {prediction["location_point"]}')
-        st.write("---")
+            # Create a Folium map centered on the average location
+            if predictions:
+                avg_lat = sum(pred["location_point"][1] for pred in predictions) / len(predictions)
+                avg_lon = sum(pred["location_point"][0] for pred in predictions) / len(predictions)
+                m = folium.Map(location=[avg_lat, avg_lon], zoom_start=10)
 
-    # Create a Folium map centered on the average location
-    if predictions:
-        avg_lat = sum(pred["location_point"][1] for pred in predictions) / len(predictions)
-        avg_lon = sum(pred["location_point"][0] for pred in predictions) / len(predictions)
-        m = folium.Map(location=[avg_lat, avg_lon], zoom_start=10)
+                # Add markers with tooltips
+                for prediction in predictions:
+                    tooltip = (f"User ID: {prediction['user_id']}<br>"
+                               f"Location Name: {prediction['location_name']}<br>"
+                               f"Location Point: ({prediction['location_point'][1]}, {prediction['location_point'][0]})<br>"
+                               f"Timestamp: {prediction['timestamp']}")
+                    folium.Marker(
+                        location=prediction['location_point'][::-1],  # Reverse coordinates for Folium
+                        tooltip=tooltip
+                    ).add_to(m)
 
-        # Add markers with tooltips
-        for prediction in predictions:
-            tooltip = (f"User ID: {prediction['user_id']}<br>"
-                       f"Location Name: {prediction['location_name']}<br>"
-                       f"Location Point: ({prediction['location_point'][1]}, {prediction['location_point'][0]})<br>"
-                       f"Timestamp: {prediction['timestamp']}")
-            folium.Marker(
-                location=prediction['location_point'][::-1],  # Reverse coordinates for Folium
-                tooltip=tooltip
-            ).add_to(m)
+                # Display the map in Streamlit
+                folium_static(m)
 
-        # Display the map in Streamlit
-        folium_static(m)
+                st.write("### Explore the map and interact with other features.")
+            else:
+                st.write("No predictions available.")
 
-        st.write("### Explore the map and interact with other features.")
+            st.markdown("<div class='footer'>Location Prediction Application © 2024</div>", unsafe_allow_html=True)
+        else:
+            st.markdown("<div class='footer'>Location Prediction Application © 2024</div>", unsafe_allow_html=True)
     else:
-        st.write("No predictions available.")
+        st.warning("Please log in to access the application.")
 
-    st.markdown("<div class='footer'>Location Prediction Application © 2024</div>", unsafe_allow_html=True)
-else:
-    st.markdown("<div class='footer'>Location Prediction Application © 2024</div>", unsafe_allow_html=True)
+if __name__ == "__main__":
+    render_home()
