@@ -89,7 +89,9 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-st.title("Locato: Predicting Tomorrow's Journeys Today! :world_map:")
+st.title("Locato: world_map:")
+st.write('# Predicting Tomorrow's Journeys Today!')
+
 
 # Sidebar for inputs
 st.sidebar.title('Input Parameters')
