@@ -89,7 +89,7 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-st.title('Location Prediction Application :world_map:')
+st.title('Locato :world_map:')
 
 # Sidebar for inputs
 st.sidebar.title('Input Parameters')
